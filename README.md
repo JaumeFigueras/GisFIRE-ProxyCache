@@ -16,6 +16,7 @@ $ sudo pg_createcluster -d /home/db/postgres/gisfire -l /home/db/postgres/gisfir
 ```bash
 $ sudo -i -u postgres
 $ createuser -p 5435 -P gisfireuser
+$ exit
 ```
 
 ## Setup meteo.cat data
@@ -23,10 +24,43 @@ $ createuser -p 5435 -P gisfireuser
 ### 3. Create the proxycache database
 
 ```bash
+$ sudo -i -u postgres
 $ createdb -p 5435 -E UTF8 -O gisfireuser meteocat
-$ psql -p 5434 -d meteocat
-\## CREATE EXTENSION postgis;
-\## CREATE EXTENSION postgis_topology;
-\## ^d
+$ psql -p 5435 -d meteocat
+# CREATE EXTENSION postgis;
+# CREATE EXTENSION postgis_topology;
+# ^d
 $ exit
 ```
+
+### 4. Add tables
+
+
+### 5. Allow remote access to database, so GIS software can access all information
+
+```bash
+$ sudo -i -u postgres
+$ createuser -p 5435 -P remotegisfireuser
+$ psql -p 5435 -d meteocat
+# GRANT CONNECT ON DATABASE meteocat TO remotegisfireuser;
+# GRANT USAGE ON SCHEMA public TO remotegisfireuser;
+# GRANT SELECT ON xdde_requests TO remotegisfireuser;
+# GRANT SELECT ON ALL TABLES IN SCHEMA public TO remotegisfireuser;
+# ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO remotegisfireuser;
+# ^d
+$ exit
+```
+
+### 6. Allow remote acces to postgres server
+
+```bash
+sudo nano /etc/postgresql/10/gisfire/postgresql.conf
+--- change  
+#listen_addresses = 'localhost'
+--- to
+listen_addresses = '*'
+---
+sudo nano /etc/postgresql/10/gisfire/pg_hba.conf
+--- add
+# IPv4 remote connections
+host    all             remotegisfireuser       0.0.0.0/0       password
