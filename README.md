@@ -59,7 +59,7 @@ sudo nano /etc/postgresql/10/gisfire/postgresql.conf
 #listen_addresses = 'localhost'
 --- to
 listen_addresses = '*'
----
+
 sudo nano /etc/postgresql/10/gisfire/pg_hba.conf
 --- add
 # IPv4 remote connections
