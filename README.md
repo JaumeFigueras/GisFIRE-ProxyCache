@@ -64,3 +64,22 @@ sudo nano /etc/postgresql/10/gisfire/pg_hba.conf
 --- add
 # IPv4 remote connections
 host    all             remotegisfireuser       0.0.0.0/0       password
+```
+
+### 7. Flask Setup
+
+```bash
+sudo apt-get install python3-flask libapache2-mod-wsgi-py3 python-dev
+sudo a2enmod wsgi
+
+add config to site configuration
+
+  WSGIScriptAlias /api /home/gisfire/test_flask.wsgi
+  <Directory /home/gisfire/>
+    # set permissions as per apache2.conf file
+    Options FollowSymLinks
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+```
